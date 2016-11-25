@@ -32,6 +32,8 @@ public class Parser {
            String s = el.getTextContent();
             if("Перерыв".equals(s)) {
                 time1.add(100);
+            } else if(s.length() < 3){
+                time1.add(Integer.parseInt(s.substring(0, 1)));
             } else {
                 time1.add(Integer.parseInt(s.substring(0, 2)));
             }

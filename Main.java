@@ -15,6 +15,7 @@ public class Main {
         ArrayList<Integer> time = parser.parseTime(mainPage);
         int[] [] count = parser.parseCount(mainPage);
         ArrayList<String> url = parser.parseUrl(mainPage);
+
         //all LIVE matchs
         ArrayList<Long> exsist = new ArrayList<>();
 
@@ -26,33 +27,50 @@ public class Main {
 
             //cheking
             if(dBserv.get(url.get(i))==null) {
-                //добавляем в БД
-                dBserv.insert(name, count[0][i], count[1][i], time.get(i), coef.get(0), coef.get(1), coef.get(2), url.get(i));
+                try {
+                    //добавляем в БД
+                    dBserv.insert(name, count[0][i], count[1][i], time.get(i), coef.get(0), coef.get(1), coef.get(2), url.get(i));
+                } catch (IndexOutOfBoundsException e) {
+                    dBserv.insert(name, count[0][i], count[1][i], time.get(i), 0, 0, 0, url.get(i));
+                }
                 exsist.add(dBserv.get(url.get(i)).getId());
+                System.out.println("add "+ name+" "+exsist.size());
             } else {
                 //update
                 long id = dBserv.get(url.get(i)).getId();
-                dBserv.update(time.get(i), count[0] [i], count[1] [i], coef.get(0), coef.get(1), coef.get(2), id);
+                try {
+                    dBserv.update(time.get(i), count[0][i], count[1][i], coef.get(0), coef.get(1), coef.get(2), id);
+                } catch (IndexOutOfBoundsException e) {
+                    dBserv.update(time.get(i), count[0][i], count[1][i], 0, 0, 0, id);
+                }
                 exsist.add(id);
+                System.out.println("upd "+ dBserv.get(url.get(i)).getName()+" "+exsist.size());
             }
 
         }
+        System.out.println("size ex"+exsist.size());
         //get all match from DB LIVE + ENDED
         ArrayList<Long> matchsFromDB = dBserv.getIds();
         //get all ENDED matchs
+        ArrayList<Long> toDel = new ArrayList<>(matchsFromDB);
         for(int i = 0; i < matchsFromDB.size(); i++) {
             for(int o = 0; o < exsist.size(); o++) {
-                if(matchsFromDB.get(i) == exsist.get(o)) {
-                    matchsFromDB.remove(i);
+                long l1 = matchsFromDB.get(i);
+                long l2 = exsist.get(o);
+                if(l1 == l2) {
+                    toDel.remove(l1);
+                    break;
                 }
             }
         }
+
         //delet ENDED matches
-        if(!matchsFromDB.isEmpty()) {
-            for(int i = 0; i < matchsFromDB.size(); i++) {
-                dBserv.delete(matchsFromDB.get(i));
+        if(!toDel.isEmpty()) {
+            for(int i = 0; i < toDel.size(); i++) {
+                dBserv.delete(toDel.get(i));
             }
         }
+
 
     }
 }
