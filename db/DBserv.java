@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Created by Игорь on 23.11.2016.
@@ -35,6 +36,7 @@ public class DBserv {
         } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        System.out.println("return nulllll-------------------");
         return null;
     }
 
@@ -56,6 +58,7 @@ public class DBserv {
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                System.out.println("SQLEXEPTION-------------------");
             } catch (SQLException ignore) {
             }
         } finally {
@@ -63,6 +66,52 @@ public class DBserv {
                 connection.setAutoCommit(true);
             }catch (SQLException w) {}
         }
+    }
 
+    public void update(int time, int g1, int g2, float c1, float c2, float c3, long id) {
+        try {
+            connection.setAutoCommit(false);
+            Dao dao = new Dao(connection);
+            dao.updateTime(time, id);
+            dao.updateCount(g1, g2, id);
+            dao.updateCoef(c1, c2, c3, id);
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+                System.out.println("SQLEXEPTION-------------------UPDATE");
+            } catch (SQLException ignore) {
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            }catch (SQLException w) {}
+        }
+    }
+
+    public ArrayList<Long> getIds() {
+        try {
+            return new Dao(connection).getIds();
+        } catch (SQLException e) {
+            System.out.println("Pacan k uspehu wel");
+            return null;
+        }
+    }
+
+    public void delete(long id) {
+        try {
+            connection.setAutoCommit(false);
+            Dao dao = new Dao(connection);
+            dao.delete(id);
+            connection.commit();
+        } catch (SQLException e) {
+            System.out.print("delete failure");
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

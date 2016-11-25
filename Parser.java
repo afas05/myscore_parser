@@ -1,13 +1,10 @@
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.HtmlDivision;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlTable;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -36,7 +33,7 @@ public class Parser {
             if("Перерыв".equals(s)) {
                 time1.add(100);
             } else {
-                time1.add(Integer.parseInt(s.substring(0, 1)));
+                time1.add(Integer.parseInt(s.substring(0, 2)));
             }
         }
         return time1;
@@ -49,10 +46,10 @@ public class Parser {
 
         for(int i = 0; i < link.size(); i++) {
 
-            char[] ar = link.get(i).getTextContent().toCharArray();
+            String[] s1 = link.get(i).getTextContent().split(":");
 
-            count[0] [i] = Character.valueOf(ar[0]);
-            count[1] [i] = Character.valueOf(ar[2]);
+            count[0] [i] = Integer.parseInt(s1[0]);
+            count[1] [i] = Integer.parseInt(s1[1]);
 
         }
         return count;
@@ -69,12 +66,23 @@ public class Parser {
     }
 
     public ArrayList getKoef(HtmlPage page1) {
-        List<DomElement> dom = (List<DomElement>) page1.getByXPath(".//*[@id='main']/p[3]/a");
+
         ArrayList<Float> coef = new ArrayList<>();
-        for(DomElement el: dom) {
-            coef.add(Float.parseFloat(el.getTextContent()));
+        try {
+            List<DomElement> dom = (List<DomElement>) page1.getByXPath(".//*[@id='main']/p[3]/a");
+            for (DomElement el : dom) {
+
+                coef.add(Float.parseFloat(el.getTextContent()));
+            }
+            return coef;
+        } catch (Exception e) {
+            List<DomElement> dom = (List<DomElement>) page1.getByXPath(".//*[@id='main']/p[2]/a");
+            for (DomElement el : dom) {
+
+                coef.add(Float.parseFloat(el.getTextContent()));
+            }
+            return coef;
         }
-        return coef;
     }
 
     public String getName(HtmlPage page1) {

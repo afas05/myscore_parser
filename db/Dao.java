@@ -4,6 +4,7 @@ import db.executor.Executor;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Created by Игорь on 22.11.2016.
@@ -29,5 +30,27 @@ public class Dao {
 
     public void delete(long id) throws SQLException {
         executor.execUpdate("DELETE FROM `parserdb`.`matches` WHERE `idmatches`='"+ id +"';");
+    }
+
+    public void updateTime(int time, long id) throws SQLException {
+        executor.execUpdate("UPDATE `parserdb`.`matches` SET `time`='"+time +"' WHERE `idmatches`='"+id+"';");
+    }
+
+    public void updateCount(int g1, int g2, long id) throws SQLException {
+        executor.execUpdate("UPDATE `parserdb`.`matches` SET `goal1st`='"+g1+"', `goal2nd`='"+g2+"' WHERE `idmatches`='"+id+"';");
+    }
+
+    public void updateCoef(float c1, float c2, float c3, long id) throws SQLException {
+        executor.execUpdate("UPDATE `parserdb`.`matches` SET `coef1`='"+c1+"', `coef2`='"+c2+"', `coef3`='"+c3+"' WHERE `idmatches`='"+id+"';");
+    }
+
+    public ArrayList<Long> getIds() throws SQLException {
+        ArrayList<Long> list = new ArrayList<>();
+        return executor.execQuery("SELECT idmatches FROM parserdb.matches;", resultSet -> {
+            while (resultSet.next()) {
+                list.add(resultSet.getLong(1));
+            }
+            return list;
+        });
     }
 }
