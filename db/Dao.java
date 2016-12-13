@@ -1,56 +1,71 @@
 package db;
 
-import db.executor.Executor;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by Игорь on 22.11.2016.
  */
 public class Dao {
-    private Executor executor;
+    private Session session;
 
-    public Dao(Connection connection) {
-        this.executor = new Executor(connection);
+    public Dao(Session session) {
+        this.session = session;
     }
 
-    public void insert(String name, int count1, int count2, int time,
-                       float coef1, float coef2, float coef3, String url) throws SQLException {
-        executor.execUpdate("INSERT INTO `parserdb`.`matches` (`name`, `goal1st`, `goal2nd`, `time`, `coef1`, `coef2`, `coef3`, `url`) VALUES ('"+ name +"', '"+ count1 +"', '"+ count2+"', '"+ time + "', '"+coef1+"', '"+coef2+"', '"+coef3+"', '"+url+"');");
+    public Long insert(String name, int count1, int count2, int time,
+                       float coef1, float coef2, float coef3, String url) throws HibernateException {
+        return (Long) session.save(new DataSet(name, count1, count2, time, coef1, coef2, coef3, url));
     }
 
-    public DataSet get(String url) throws SQLException {
-        return executor.execQuery("select * from parserdb.matches where url='" + url +"'", result -> {
-            result.next();
-            return new DataSet(result.getLong(1), result.getString(2), result.getInt(3), result.getInt(4), result.getInt(5), result.getFloat(6), result.getFloat(7), result.getFloat(8), result.getString(9));
-        });
+    public DataSet get(String url) throws HibernateException {
+        Criteria criteria = session.createCriteria(DataSet.class);
+        return ((DataSet) criteria.add(Restrictions.eq("url", url)).uniqueResult());
     }
 
     public void delete(long id) throws SQLException {
-        executor.execUpdate("DELETE FROM `parserdb`.`matches` WHERE `idmatches`='"+ id +"';");
+        Transaction transaction = null;
+        transaction = session.beginTransaction();
+        DataSet dataSet = (DataSet) session.get(DataSet.class, id);
+        session.delete(dataSet);
+        transaction.commit();
+        session.close();
     }
 
-    public void updateTime(int time, long id) throws SQLException {
-        executor.execUpdate("UPDATE `parserdb`.`matches` SET `time`='"+time +"' WHERE `idmatches`='"+id+"';");
+    public void update(int time, int g1,  int g2, float c1, float c2, float c3, long id) throws HibernateException {
+        Transaction transaction = null;
+        transaction = session.beginTransaction();
+        DataSet dataSet = (DataSet) session.get(DataSet.class, id);
+        dataSet.setTime(time);
+        dataSet.setCount1(g1);
+        dataSet.setCount2(g2);
+        dataSet.setCoef1(c1);
+        dataSet.setCoef2(c2);
+        dataSet.setCoef3(c3);
+        session.update(dataSet);
+        transaction.commit();
+        session.close();
     }
 
-    public void updateCount(int g1, int g2, long id) throws SQLException {
-        executor.execUpdate("UPDATE `parserdb`.`matches` SET `goal1st`='"+g1+"', `goal2nd`='"+g2+"' WHERE `idmatches`='"+id+"';");
-    }
-
-    public void updateCoef(float c1, float c2, float c3, long id) throws SQLException {
-        executor.execUpdate("UPDATE `parserdb`.`matches` SET `coef1`='"+c1+"', `coef2`='"+c2+"', `coef3`='"+c3+"' WHERE `idmatches`='"+id+"';");
-    }
 
     public ArrayList<Long> getIds() throws SQLException {
-        ArrayList<Long> list = new ArrayList<>();
-        return executor.execQuery("SELECT idmatches FROM parserdb.matches;", resultSet -> {
-            while (resultSet.next()) {
-                list.add(resultSet.getLong(1));
-            }
-            return list;
-        });
+
+        ArrayList<Long> ids = new ArrayList<>();
+        Transaction transaction = null;
+        transaction = session.beginTransaction();
+        ArrayList<Long> list = (ArrayList<Long>) session.createQuery("FROM matches").list();
+
+        for (Iterator iterator = list.iterator(); iterator.hasNext();) {
+            DataSet dataSet = (DataSet) iterator.next();
+            ids.add(dataSet.getId());
+        }
+        return ids;
     }
 }

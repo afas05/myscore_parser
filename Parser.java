@@ -73,14 +73,14 @@ public class Parser {
         try {
             List<DomElement> dom = (List<DomElement>) page1.getByXPath(".//*[@id='main']/p[3]/a");
             for (DomElement el : dom) {
-
+                System.out.println(el.getTextContent());
                 coef.add(Float.parseFloat(el.getTextContent()));
             }
             return coef;
         } catch (Exception e) {
             List<DomElement> dom = (List<DomElement>) page1.getByXPath(".//*[@id='main']/p[2]/a");
             for (DomElement el : dom) {
-
+                System.out.println(el.getTextContent());
                 coef.add(Float.parseFloat(el.getTextContent()));
             }
             return coef;
