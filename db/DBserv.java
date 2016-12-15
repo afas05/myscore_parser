@@ -1,5 +1,13 @@
 package db;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -10,108 +18,78 @@ import java.util.ArrayList;
  * Created by Игорь on 23.11.2016.
  */
 public class DBserv {
-    private final Connection connection;
+    private static final String hibernate_show_sql = "true";
+    private static final String hibernate_hbm2ddl_auto = "create";
+
+    private final SessionFactory sessionFactory;
 
     public DBserv() {
-        this.connection = getMySqlCon();
+        Configuration configuration = getMysqlConf();
+        sessionFactory = createSessionfactory(configuration);
     }
 
-    public static Connection getMySqlCon() {
-        try {
-            DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
+    private Configuration getMysqlConf() {
+        Configuration configuration = new Configuration();
 
-            StringBuilder url = new StringBuilder();
+        configuration.addAnnotatedClass(DataSet.class);
 
-            url.
-                    append("jdbc:mysql://").        //db type
-                    append("localhost:").           //host name
-                    append("3306/").                //port
-                    append("parserdb?").          //db name
-                    append("user=root&").          //login
-                    append("password=1111");       //password
+        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.SQLiteDialect");
+        configuration.setProperty("hibernate.connection.driver_class", "org.sqlite.JDBC");
+        configuration.setProperty("hibernate.connection.url", "jdbc:sqlite:db.db");
+        //configuration.setProperty("hibernate.connection.username", "");
+        //configuration.setProperty("hibernate.connection.password", "");
+        configuration.setProperty("hibernate.show_sql", hibernate_show_sql);
+        configuration.setProperty("hibernate.hbm2ddl.auto", hibernate_hbm2ddl_auto);
+        return configuration;
+    }
 
-
-            Connection connection = DriverManager.getConnection(url.toString());
-            return connection;
-        } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        System.out.println("return nulllll-------------------");
-        return null;
+    private static SessionFactory createSessionfactory(Configuration configuration) {
+        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
+        builder.applySettings(configuration.getProperties());
+        ServiceRegistry serviceRegistry = builder.build();
+        return configuration.buildSessionFactory(serviceRegistry);
     }
 
     public DataSet get(String url) {
-        try {
-            return (new Dao(connection).get(url));
-        } catch (SQLException e) {
-            return null;
-        }
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        Dao dao = new Dao(session);
+        DataSet dataSet = dao.get(url);
+        transaction.commit();
+        session.close();
+        return dataSet;
     }
 
     public void insert(String name, int count1, int count2, int time,
                        float coef1, float coef2, float coef3, String url) {
         try {
-            connection.setAutoCommit(false);
-            Dao dao = new Dao(connection);
-            dao.insert(name, count1, count2, time, coef1, coef2, coef3, url);
-            connection.commit();
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-                System.out.println("SQLEXEPTION-------------------");
-            } catch (SQLException ignore) {
-            }
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            }catch (SQLException w) {}
+            Session session = sessionFactory.openSession();
+            Transaction transaction = session.beginTransaction();
+            Dao dao = new Dao(session);
+            long id = dao.insert(name, count1, count2, time, coef1, coef2, coef3, url);
+            transaction.commit();
+            session.close();
+        } catch (HibernateException e) {
+            System.out.println("Hib exep insert");
         }
     }
 
     public void update(int time, int g1, int g2, float c1, float c2, float c3, long id) {
-        try {
-            connection.setAutoCommit(false);
-            Dao dao = new Dao(connection);
-            dao.updateTime(time, id);
-            dao.updateCount(g1, g2, id);
-            dao.updateCoef(c1, c2, c3, id);
-            connection.commit();
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-                System.out.println("SQLEXEPTION-------------------UPDATE");
-            } catch (SQLException ignore) {
-            }
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            }catch (SQLException w) {}
-        }
+        Session session = sessionFactory.openSession();
+        Dao dao = new Dao(session);
+        dao.update(time, g1, g2, c1, c2, c3, id);
     }
 
-    public ArrayList<Long> getIds() {
-        try {
-            return new Dao(connection).getIds();
-        } catch (SQLException e) {
-            System.out.println("Pacan k uspehu wel");
-            return null;
-        }
+    public ArrayList<Long> getIds() throws SQLException {
+        Session session = sessionFactory.openSession();
+        Dao dao = new Dao(session);
+        ArrayList<Long> longs = new ArrayList<>();
+        return longs = dao.getIds();
     }
 
-    public void delete(long id) {
-        try {
-            connection.setAutoCommit(false);
-            Dao dao = new Dao(connection);
-            dao.delete(id);
-            connection.commit();
-        } catch (SQLException e) {
-            System.out.print("delete failure");
-        } finally {
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
+    public void delete(long id)  throws SQLException {
+        Session session = sessionFactory.openSession();
+        Dao dao = new Dao(session);
+        dao.delete(id);
     }
 }

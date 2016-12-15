@@ -1,5 +1,7 @@
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import db.DBserv;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -20,7 +22,7 @@ public class Main {
         ArrayList<Long> exsist = new ArrayList<>();
 
         for (int i = 0; i < url.size(); i++) {
-            //достаем данные для первого матча
+            //достаем данные для каждого матча по очереди
             HtmlPage page = parser.getPage(url.get(i));
             String name = parser.getName(page);
             ArrayList<Float> coef = parser.getKoef(page);
@@ -48,29 +50,32 @@ public class Main {
             }
 
         }
-        System.out.println("size ex"+exsist.size());
-        //get all match from DB LIVE + ENDED
-        ArrayList<Long> matchsFromDB = dBserv.getIds();
-        //get all ENDED matchs
-        ArrayList<Long> toDel = new ArrayList<>(matchsFromDB);
-        for(int i = 0; i < matchsFromDB.size(); i++) {
-            for(int o = 0; o < exsist.size(); o++) {
-                long l1 = matchsFromDB.get(i);
-                long l2 = exsist.get(o);
-                if(l1 == l2) {
-                    toDel.remove(l1);
-                    break;
+        try {
+            //get all match from DB LIVE + ENDED
+            ArrayList<Long> matchsFromDB = dBserv.getIds();
+
+            //get all ENDED matchs
+            ArrayList<Long> toDel = new ArrayList<>(matchsFromDB);
+            for (int i = 0; i < matchsFromDB.size(); i++) {
+                for (int o = 0; o < exsist.size(); o++) {
+                    long l1 = matchsFromDB.get(i);
+                    long l2 = exsist.get(o);
+                    if (l1 == l2) {
+                        toDel.remove(l1);
+                        break;
+                    }
                 }
             }
-        }
 
-        //delet ENDED matches
-        if(!toDel.isEmpty()) {
-            for(int i = 0; i < toDel.size(); i++) {
-                dBserv.delete(toDel.get(i));
+            //delet ENDED matches
+            if (!toDel.isEmpty()) {
+                for (int i = 0; i < toDel.size(); i++) {
+                    dBserv.delete(toDel.get(i));
+                }
             }
+
+        } catch (SQLException e) {
+            System.out.println("SQl exep");
         }
-
-
     }
 }
