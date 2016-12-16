@@ -20,9 +20,9 @@ public class Dao {
         this.session = session;
     }
 
-    public Long insert(String name, int count1, int count2, int time,
+    public Integer insert(String name, int count1, int count2, int time,
                        float coef1, float coef2, float coef3, String url) throws HibernateException {
-        return (Long) session.save(new DataSet(name, count1, count2, time, coef1, coef2, coef3, url));
+        return (Integer) session.save(new DataSet(name, count1, count2, time, coef1, coef2, coef3, url));
     }
 
     public DataSet get(String url) throws HibernateException {
@@ -30,7 +30,7 @@ public class Dao {
         return ((DataSet) criteria.add(Restrictions.eq("url", url)).uniqueResult());
     }
 
-    public void delete(long id) throws SQLException {
+    public void delete(int id) throws SQLException {
         Transaction transaction = null;
         transaction = session.beginTransaction();
         DataSet dataSet = (DataSet) session.get(DataSet.class, id);
@@ -39,7 +39,7 @@ public class Dao {
         session.close();
     }
 
-    public void update(int time, int g1,  int g2, float c1, float c2, float c3, long id) throws HibernateException {
+    public void update(int time, int g1,  int g2, float c1, float c2, float c3, int id) throws HibernateException {
         Transaction transaction = null;
         transaction = session.beginTransaction();
         DataSet dataSet = (DataSet) session.get(DataSet.class, id);
@@ -64,7 +64,7 @@ public class Dao {
 
         for (Iterator iterator = list.iterator(); iterator.hasNext();) {
             DataSet dataSet = (DataSet) iterator.next();
-            ids.add(dataSet.getId());
+            ids.add((long) dataSet.getId());
         }
         session.close();
         return ids;

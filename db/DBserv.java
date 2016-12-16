@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class DBserv {
     private static final String hibernate_show_sql = "true";
-    private static final String hibernate_hbm2ddl_auto = "create";
+    private static final String hibernate_hbm2ddl_auto = "validate";
 
     private final SessionFactory sessionFactory;
 
@@ -63,7 +63,7 @@ public class DBserv {
             Session session = sessionFactory.openSession();
             Transaction transaction = session.beginTransaction();
             Dao dao = new Dao(session);
-            long id = dao.insert(name, count1, count2, time, coef1, coef2, coef3, url);
+            int id = dao.insert(name, count1, count2, time, coef1, coef2, coef3, url);
             transaction.commit();
             session.close();
         } catch (HibernateException e) {
@@ -71,7 +71,7 @@ public class DBserv {
         }
     }
 
-    public void update(int time, int g1, int g2, float c1, float c2, float c3, long id) {
+    public void update(int time, int g1, int g2, float c1, float c2, float c3, int id) {
         Session session = sessionFactory.openSession();
         Dao dao = new Dao(session);
         dao.update(time, g1, g2, c1, c2, c3, id);
@@ -89,7 +89,7 @@ public class DBserv {
     public void delete(long id)  throws SQLException {
         Session session = sessionFactory.openSession();
         Dao dao = new Dao(session);
-        dao.delete(id);
+        dao.delete((int) id);
         session.close();
     }
 

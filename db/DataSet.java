@@ -12,7 +12,7 @@ public class DataSet implements Serializable{
     @Id
     @Column(name = "idmatches")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
     @Column(name = "name")
     private String name;
@@ -40,7 +40,7 @@ public class DataSet implements Serializable{
 
     public DataSet(){}
 
-    public DataSet(long id, String name, int count1, int count2, int time, float coef1, float coef2, float coef3, String url) {
+    public DataSet(int id, String name, int count1, int count2, int time, float coef1, float coef2, float coef3, String url) {
         this.setId(id);
         this.setName(name);
         this.setCount1(count1);
@@ -64,7 +64,7 @@ public class DataSet implements Serializable{
         this.setUrl(url);
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -100,7 +100,7 @@ public class DataSet implements Serializable{
         this.url = url;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 

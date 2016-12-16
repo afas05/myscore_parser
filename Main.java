@@ -19,7 +19,7 @@ public class Main {
         ArrayList<String> url = parser.parseUrl(mainPage);
 
         //all LIVE matchs
-        ArrayList<Long> exsist = new ArrayList<>();
+        ArrayList<Integer> exsist = new ArrayList<>();
 
         for (int i = 0; i < url.size(); i++) {
             //достаем данные для каждого матча по очереди
@@ -39,7 +39,7 @@ public class Main {
                 System.out.println("add "+ name+" "+exsist.size());
             } else {
                 //update
-                long id = dBserv.get(url.get(i)).getId();
+                int id = dBserv.get(url.get(i)).getId();
                 try {
                     dBserv.update(time.get(i), count[0][i], count[1][i], coef.get(0), coef.get(1), coef.get(2), id);
                 } catch (IndexOutOfBoundsException e) {
@@ -52,23 +52,25 @@ public class Main {
         }
         try {
             //get all match from DB LIVE + ENDED
-            System.out.println("Strat getIDs");
-            ArrayList<Long> matchsFromDB = dBserv.getIds();
+
+            ArrayList<Long> matchsFromDB = new ArrayList<>();
+            matchsFromDB = dBserv.getIds();
             System.out.println(matchsFromDB);
-            System.out.println("getIDs receive IDs");
             //get all ENDED matchs
-            ArrayList<Long> toDel = new ArrayList<>(matchsFromDB);
+            ArrayList<Long> toDel = new ArrayList<Long>(matchsFromDB);
+            System.out.println(matchsFromDB);
+
             for (int i = 0; i < matchsFromDB.size(); i++) {
                 for (int o = 0; o < exsist.size(); o++) {
-                    long l1 = matchsFromDB.get(i);
-                    long l2 = exsist.get(o);
+                    long l1 = (long) matchsFromDB.get(i);
+                    long l2 = (long) exsist.get(o);
                     if (l1 == l2) {
                         toDel.remove(l1);
                         break;
                     }
                 }
             }
-            System.out.println("Can delete allllllll");
+            System.out.println(toDel);
             //delet ENDED matches
             if (!toDel.isEmpty()) {
                 for (int i = 0; i < toDel.size(); i++) {
@@ -80,7 +82,6 @@ public class Main {
             System.out.println("SQl exep");
         }
         dBserv.closeFactory();
-        System.out.println(Thread.getAllStackTraces());
 
     }
 
