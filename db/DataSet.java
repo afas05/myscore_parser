@@ -47,8 +47,8 @@ public class DataSet implements Serializable{
         this.setCount2(count2);
         this.setTime(time);
         this.setCoef1(coef1);
-        this.setCoef1(coef2);
-        this.setCoef1(coef3);
+        this.setCoef2(coef2);
+        this.setCoef3(coef3);
         this.setUrl(url);
     }
 
@@ -59,8 +59,8 @@ public class DataSet implements Serializable{
         this.setCount2(count2);
         this.setTime(time);
         this.setCoef1(coef1);
-        this.setCoef1(coef2);
-        this.setCoef1(coef3);
+        this.setCoef2(coef2);
+        this.setCoef3(coef3);
         this.setUrl(url);
     }
 
