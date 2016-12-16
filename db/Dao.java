@@ -60,12 +60,13 @@ public class Dao {
         ArrayList<Long> ids = new ArrayList<>();
         Transaction transaction = null;
         transaction = session.beginTransaction();
-        ArrayList<Long> list = (ArrayList<Long>) session.createQuery("SELECT idmatches FROM matches").list();
+        ArrayList<Long> list = (ArrayList<Long>) session.createCriteria(DataSet.class).list();
 
         for (Iterator iterator = list.iterator(); iterator.hasNext();) {
             DataSet dataSet = (DataSet) iterator.next();
             ids.add(dataSet.getId());
         }
+        session.close();
         return ids;
     }
 }

@@ -26,13 +26,13 @@ public class DataSet implements Serializable{
     @Column(name = "time")
     private int time;
 
-    @Column(name = "coef1")
+    @Column(name = "coef1", columnDefinition="REAL")
     private float coef1;
 
-    @Column(name = "coef2")
+    @Column(name = "coef2", columnDefinition="REAL")
     private float coef2;
 
-    @Column(name = "coef3")
+    @Column(name = "coef3", columnDefinition="REAL")
     private float coef3;
 
     @Column(name = "url")

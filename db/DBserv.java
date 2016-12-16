@@ -8,9 +8,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -19,7 +16,7 @@ import java.util.ArrayList;
  */
 public class DBserv {
     private static final String hibernate_show_sql = "true";
-    private static final String hibernate_hbm2ddl_auto = "create";
+    private static final String hibernate_hbm2ddl_auto = "validate";
 
     private final SessionFactory sessionFactory;
 
@@ -78,18 +75,21 @@ public class DBserv {
         Session session = sessionFactory.openSession();
         Dao dao = new Dao(session);
         dao.update(time, g1, g2, c1, c2, c3, id);
+        session.close();
     }
 
     public ArrayList<Long> getIds() throws SQLException {
         Session session = sessionFactory.openSession();
         Dao dao = new Dao(session);
-        ArrayList<Long> longs = new ArrayList<>();
-        return longs = dao.getIds();
+        ArrayList<Long> longs = dao.getIds();
+        session.close();
+        return longs;
     }
 
     public void delete(long id)  throws SQLException {
         Session session = sessionFactory.openSession();
         Dao dao = new Dao(session);
         dao.delete(id);
+        session.close();
     }
 }

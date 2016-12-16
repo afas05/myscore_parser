@@ -52,8 +52,10 @@ public class Main {
         }
         try {
             //get all match from DB LIVE + ENDED
+            System.out.println("Strat getIDs");
             ArrayList<Long> matchsFromDB = dBserv.getIds();
-
+            System.out.println(matchsFromDB);
+            System.out.println("getIDs receive IDs");
             //get all ENDED matchs
             ArrayList<Long> toDel = new ArrayList<>(matchsFromDB);
             for (int i = 0; i < matchsFromDB.size(); i++) {
@@ -66,7 +68,7 @@ public class Main {
                     }
                 }
             }
-
+            System.out.println("Can delete allllllll");
             //delet ENDED matches
             if (!toDel.isEmpty()) {
                 for (int i = 0; i < toDel.size(); i++) {
