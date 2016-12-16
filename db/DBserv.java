@@ -16,7 +16,7 @@ import java.util.ArrayList;
  */
 public class DBserv {
     private static final String hibernate_show_sql = "true";
-    private static final String hibernate_hbm2ddl_auto = "validate";
+    private static final String hibernate_hbm2ddl_auto = "create";
 
     private final SessionFactory sessionFactory;
 
@@ -91,5 +91,9 @@ public class DBserv {
         Dao dao = new Dao(session);
         dao.delete(id);
         session.close();
+    }
+
+    public void closeFactory() {
+        sessionFactory.close();
     }
 }

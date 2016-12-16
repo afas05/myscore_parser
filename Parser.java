@@ -17,6 +17,7 @@ public class Parser {
             WebClient webClient = new WebClient(BrowserVersion.FIREFOX_17);
             HtmlPage page = webClient.getPage(url);
             webClient.waitForBackgroundJavaScript(1000);
+            webClient.closeAllWindows();
             return page;
         } catch (IOException e) {
             e.printStackTrace();
