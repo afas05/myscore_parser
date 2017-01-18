@@ -30,7 +30,7 @@ public class Parser {
         ArrayList<Integer> time1 = new ArrayList<>();
         for(DomElement el: time) {
            String s = el.getTextContent();
-            if("Перерыв".equals(s)) {
+            if("Перерыв".equals(s) || "Ожидание обновления".equals(s)) {
                 time1.add(100);
             } else if(s.length() < 3){
                 time1.add(Integer.parseInt(s.substring(0, 1)));

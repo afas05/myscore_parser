@@ -76,5 +76,7 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("SQl exep");
         }
+
+        dBserv.closeFactory();
     }
 }
