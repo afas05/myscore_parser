@@ -69,4 +69,13 @@ public class Dao {
         session.close();
         return ids;
     }
+
+    public ArrayList<DataSet> getAll() throws SQLException {
+
+        Transaction transaction = null;
+        transaction = session.beginTransaction();
+        ArrayList<DataSet> alls = (ArrayList<DataSet>) session.createCriteria(DataSet.class).list();
+        session.close();
+        return alls;
+    }
 }

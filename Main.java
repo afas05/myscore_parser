@@ -52,17 +52,17 @@ public class Main {
         }
         try {
             //get all match from DB LIVE + ENDED
-
             ArrayList<Long> matchsFromDB = new ArrayList<>();
             matchsFromDB = dBserv.getIds();
             System.out.println(matchsFromDB);
+
             //get all ENDED matchs
             ArrayList<Long> toDel = new ArrayList<Long>(matchsFromDB);
             System.out.println(matchsFromDB);
 
             for (int i = 0; i < matchsFromDB.size(); i++) {
                 for (int o = 0; o < exsist.size(); o++) {
-                    long l1 = (long) matchsFromDB.get(i);
+                    long l1 = matchsFromDB.get(i);
                     long l2 = (long) exsist.get(o);
                     if (l1 == l2) {
                         toDel.remove(l1);
@@ -81,6 +81,9 @@ public class Main {
         } catch (SQLException e) {
             System.out.println("SQl exep");
         }
+
+        ExelExport exel = new ExelExport();
+
         dBserv.closeFactory();
 
     }

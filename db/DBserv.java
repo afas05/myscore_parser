@@ -96,4 +96,13 @@ public class DBserv {
     public void closeFactory() {
         sessionFactory.close();
     }
+
+    public ArrayList<DataSet> getAll() throws SQLException {
+
+        Session session = sessionFactory.openSession();
+        Dao dao = new Dao(session);
+        ArrayList<DataSet> alls = dao.getAll();
+        session.close();
+        return alls;
+    }
 }
