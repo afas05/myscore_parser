@@ -1,6 +1,8 @@
 package db;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
+
 /**
  * Created by Игорь on 22.11.2016.
  */
@@ -27,13 +29,13 @@ public class DataSet implements Serializable{
     private int time;
 
     @Column(name = "coef1", columnDefinition="REAL")
-    private float coef1;
+    private BigDecimal coef1;
 
     @Column(name = "coef2", columnDefinition="REAL")
-    private float coef2;
+    private BigDecimal coef2;
 
     @Column(name = "coef3", columnDefinition="REAL")
-    private float coef3;
+    private BigDecimal coef3;
 
     @Column(name = "url")
     private String url;
@@ -85,15 +87,15 @@ public class DataSet implements Serializable{
     }
 
     public void setCoef1(float coef1) {
-        this.coef1 = coef1;
+        this.coef1 = BigDecimal.valueOf(coef1);
     }
 
     public void setCoef2(float coef2) {
-        this.coef2 = coef2;
+        this.coef2 = BigDecimal.valueOf(coef2);
     }
 
     public void setCoef3(float coef3) {
-        this.coef3 = coef3;
+        this.coef3 = BigDecimal.valueOf(coef3);
     }
 
     public void setUrl(String url) {
@@ -121,15 +123,15 @@ public class DataSet implements Serializable{
     }
 
     public float getCoef1() {
-        return coef1;
+        return coef1.floatValue();
     }
 
     public float getCoef2() {
-        return coef2;
+        return coef2.floatValue();
     }
 
     public float getCoef3() {
-        return coef3;
+        return coef3.floatValue();
     }
 
     public String getUrl() {
