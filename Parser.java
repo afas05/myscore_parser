@@ -6,6 +6,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Игорь on 22.11.2016.
@@ -13,13 +14,21 @@ import java.util.List;
 public class Parser {
 
     public HtmlPage getPage(String url) {
+
+        WebClient webClient = new WebClient(BrowserVersion.FIREFOX_17);
+
         try {
-            WebClient webClient = new WebClient(BrowserVersion.FIREFOX_17);
             HtmlPage page = webClient.getPage(url);
             webClient.waitForBackgroundJavaScript(1000);
             return page;
         } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                TimeUnit.SECONDS.sleep(3);
+                HtmlPage page = webClient.getPage(url);
+                webClient.waitForBackgroundJavaScript(1000);
+                return page;
+            } catch (Exception o) {}
+
         }
         return null;
     }
@@ -30,15 +39,15 @@ public class Parser {
         ArrayList<Integer> time1 = new ArrayList<>();
         for(DomElement el: time) {
            String s = el.getTextContent();
-            if("Перерыв".equals(s) || "Ожидание обновления".equals(s)) {
-                time1.add(100);
-            } else if(s.contains("Ож")) { //КОСТЫЛЬ
-                time1.add(0);
-            } else if(s.length() < 3){
-                time1.add(Integer.parseInt(s.substring(0, 1)));
-            } else {
-                time1.add(Integer.parseInt(s.substring(0, 2)));
-            }
+           try {
+               if (s.length() < 3) {
+                   time1.add(Integer.parseInt(s.substring(0, 1)));
+               } else {
+                   time1.add(Integer.parseInt(s.substring(0, 2)));
+               }
+           } catch (NumberFormatException e) {
+               time1.add(100);
+           }
         }
         return time1;
     }
@@ -51,9 +60,13 @@ public class Parser {
         for(int i = 0; i < link.size(); i++) {
 
             String[] s1 = link.get(i).getTextContent().split(":");
-
-            count[0] [i] = Integer.parseInt(s1[0]);
-            count[1] [i] = Integer.parseInt(s1[1]);
+            try {
+                count[0][i] = Integer.parseInt(s1[0]);
+                count[1][i] = Integer.parseInt(s1[1]);
+            } catch (Exception e) {
+                count[0][i] = 99;
+                count[1][i] = 99;
+            }
 
         }
         return count;
