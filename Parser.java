@@ -26,11 +26,11 @@ public class Parser {
                 webClient.waitForBackgroundJavaScript(1000);
                 return page;
             } catch (Exception c) {
-                i = 1;
+                i++;
                 return null;
             }
 
-        } while (i > 0);
+        } while (i > 0 && i < 3);
 
     }
 
