@@ -16,21 +16,22 @@ public class Parser {
     public HtmlPage getPage(String url) {
 
         WebClient webClient = new WebClient(BrowserVersion.FIREFOX_17);
+        int i;
 
-        try {
-            HtmlPage page = webClient.getPage(url);
-            webClient.waitForBackgroundJavaScript(1000);
-            return page;
-        } catch (IOException e) {
+        do {
+            i = 0;
+
             try {
-                TimeUnit.SECONDS.sleep(3);
                 HtmlPage page = webClient.getPage(url);
                 webClient.waitForBackgroundJavaScript(1000);
                 return page;
-            } catch (Exception o) {}
+            } catch (Exception c) {
+                i = 1;
+                return null;
+            }
 
-        }
-        return null;
+        } while (i > 0);
+
     }
 
     public ArrayList<Integer> parseTime(HtmlPage page) {
@@ -47,6 +48,8 @@ public class Parser {
                }
            } catch (NumberFormatException e) {
                time1.add(100);
+           } catch (NullPointerException n) {
+               time1.add(-1);
            }
         }
         return time1;
